@@ -1,7 +1,6 @@
 # https://repl.it/@KJones94/MinecraftReference
 from mcpi.minecraft import Minecraft
 # from mcpi import block
-from math import sqrt
 import time
 import enum
 
@@ -17,7 +16,7 @@ pz = pos.z
 #   mc.setBlock(x, y, z, block.DIAMOND_BLOCK)
 #   mc.entity.setPos(x, y, z)
 
-# def move_forward(steps):
+# def forward(steps):
 #   mc.setBlock()
 #   time.sleep
 
@@ -47,6 +46,7 @@ z = 0
 homeX = 0
 homeY = 0
 HomeZ = 0
+speed = 0.25
 #------------PEN PROPERTIES------------
 
 
@@ -158,7 +158,8 @@ def home(offsetX = 0, offsetY = 0, offsetZ = 0):
     mc.setBlock(x, y, z, strokeBlock)
     update_pos(homeX + offsetX, homeY + offsetY, homeZ + offsetZ)
     
-def move_forward(amount):
+def forward(amount):
+    global speed
     for i in range(0, amount):
     # move the piston in the specified rotation
         if rotation == 0:
@@ -166,38 +167,88 @@ def move_forward(amount):
             mc.setBlock(x, y - 1, z, 33, 0)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x, y - 1, z)
-            time.sleep(0.25)
+            time.sleep(speed)
         if rotation == 1:
             # up
             mc.setBlock(x, y + 1, z, 33, 1)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x, y + 1, z)
-            time.sleep(0.25)
+            time.sleep(speed)
         if rotation == 2:
             # north
             mc.setBlock(x, y, z - 1, 33, 2)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x, y, z - 1)
-            time.sleep(0.25)
+            time.sleep(speed)
         if rotation == 3:
             # south
             mc.setBlock(x, y, z + 1, 33, 3)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x, y, z + 1)
-            time.sleep(0.25)
+            time.sleep(speed)
         if rotation == 4:
             # west
             mc.setBlock(x - 1, y, z, 33, 4)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x - 1, y, z)
-            time.sleep(0.25)
+            time.sleep(speed)
         if rotation == 5:
             # east
             mc.setBlock(x + 1, y, z, 33, 5)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x + 1, y, z)
-            time.sleep(0.25)
+            time.sleep(speed)
 
+def fd(amount):
+    forward(amount)
+
+def backward(amount):
+    for i in range(0, amount):
+    # move the piston in the specified rotation
+        if rotation == 0:
+            # down
+            mc.setBlock(x, y + 1, z, 33, 0)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x, y + 1, z)
+            time.sleep(speed)
+        if rotation == 1:
+            # up
+            mc.setBlock(x, y - 1, z, 33, 1)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x, y - 1, z)
+            time.sleep(speed)
+        if rotation == 2:
+            # north
+            mc.setBlock(x, y, z + 1, 33, 2)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x, y, z + 1)
+            time.sleep(speed)
+        if rotation == 3:
+            # south
+            mc.setBlock(x, y, z - 1, 33, 3)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x, y, z - 1)
+            time.sleep(speed)
+        if rotation == 4:
+            # west
+            mc.setBlock(x + 1, y, z, 33, 4)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x + 1, y, z)
+            time.sleep(speed)
+        if rotation == 5:
+            # east
+            mc.setBlock(x - 1, y, z, 33, 5)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x - 1, y, z)
+            time.sleep(speed)
+
+def bk(amount):
+    backward(amount)
+
+def setSpeed(newSpeed):
+    # x blocks per second
+    global speed
+    speed = 1/newSpeed
 
 def turn(direction):  # turn based on a circle of rotation
     global rotation
@@ -211,21 +262,14 @@ def turn(direction):  # turn based on a circle of rotation
         pass
     else:
         print("illegal turn direction argument. Direction can only be LEFT, RIGHT, UP, or DOWN")
+    
 
-
-create_pen(px, py - 1, pz)
+create_pen(px, py, pz)
 update_stroke(35)
 time.sleep(3)
 
-for j in range(3):
-    for i in range(10):
-        move_forward(i+1)
-        turn(direction.RIGHT)
-    update_stroke(0)
-    home()
-    turn(direction.LEFT)
-    turn(direction.LEFT)
-    turn(direction.UP)
-    update_stroke(35)
-    move_forward(j+1)
-    turn(direction.DOWN)
+for i in range(20):
+    setSpeed((i+1)/2)
+    fd(1)
+turn(direction.RIGHT)
+bk(5)
