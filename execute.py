@@ -1,6 +1,7 @@
 # https://repl.it/@KJones94/MinecraftReference
 from mcpi.minecraft import Minecraft
 # from mcpi import block
+from math import *
 import time
 import enum
 
@@ -62,12 +63,12 @@ def create_pen(cx, cy, cz):
     global homeY
     global homeZ
     rotation = 5
-    x = cx
-    y = cy
-    z = cz
-    homeX = cx
-    homeY = cy
-    homeZ = cz
+    x = int(cx)
+    y = int(cy)
+    z = int(cz)
+    homeX = x
+    homeY = y
+    homeZ = z
 
 
 def update_pos(ux, uy, uz):
@@ -244,6 +245,70 @@ def backward(amount):
 
 def bk(amount):
     backward(amount)
+    
+def setx(newX):
+    global x
+    global rotation
+    if newX > int(x):
+        for i in range(int(abs(newX-x))-1):
+            mc.setBlock(x+1, y, z, 33, rotation)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x+1, y, z)
+            time.sleep(speed)
+    else:
+        for i in range(int(abs(newX-x))+1):
+            mc.setBlock(x-1, y, z, 33, rotation)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x-1, y, z)
+            time.sleep(speed)
+            
+def sety(newY):
+    global y
+    global rotation
+    if newY > int(y):
+        for i in range(int(abs(newY-y))-1):
+            mc.setBlock(x, y+1, z, 33, rotation)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x, y+1, z)
+            print(y)
+            time.sleep(speed)
+    else:
+        for i in range(int(abs(newY-y))+1):
+            mc.setBlock(x, y-1, z, 33, rotation)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x, y-1, z)
+            time.sleep(speed)
+            
+def setz(newZ):
+    global z
+    global rotation
+    if newZ > int(z):
+        for i in range(int(abs(newZ-z))-1):
+            mc.setBlock(x, y, z+1, 33, rotation)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x, y, z+1)
+            print(z)
+            time.sleep(speed)
+    else:
+        for i in range(int(abs(newZ-z))+1):
+            mc.setBlock(x, y, z-1, 33, rotation)
+            mc.setBlock(x, y, z, strokeBlock)
+            update_pos(x, y, z-1)
+            time.sleep(speed)
+
+def goto(newX, newY, newZ):
+    #reference: https://en.wikipedia.org/wiki/Line_drawing_algorithm
+    global x
+    global y
+    global z
+    
+    dx = newX - x
+    dy = newY - y
+    dz = newZ - z
+    
+    for cx in range(cx, newX):
+        pass
+    #TODO finish path algorithm
 
 def setSpeed(newSpeed):
     # x blocks per second
@@ -268,8 +333,6 @@ create_pen(px, py, pz)
 update_stroke(35)
 time.sleep(3)
 
-for i in range(20):
-    setSpeed((i+1)/2)
-    fd(1)
-turn(direction.RIGHT)
-bk(5)
+setx(9782)
+sety(67)
+setz(9986)
