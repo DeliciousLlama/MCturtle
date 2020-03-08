@@ -7,7 +7,7 @@ import enum
 
 # mc = Minecraft.create("52.8.34.121", 4711)
 mc = Minecraft.create("localhost")
-playerId = mc.getPlayerEntityId("Flying_Llama666")
+playerId = mc.getPlayerEntityId("GnarlyLlama")
 pos = mc.entity.getPos(playerId)
 px = pos.x
 py = pos.y
@@ -250,13 +250,13 @@ def setx(newX):
     global x
     global rotation
     if newX > int(x):
-        for i in range(int(abs(newX-x))-1):
+        for i in range(int(abs(newX-x))):
             mc.setBlock(x+1, y, z, 33, rotation)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x+1, y, z)
             time.sleep(speed)
     else:
-        for i in range(int(abs(newX-x))+1):
+        for i in range(int(abs(newX-x))):
             mc.setBlock(x-1, y, z, 33, rotation)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x-1, y, z)
@@ -266,14 +266,13 @@ def sety(newY):
     global y
     global rotation
     if newY > int(y):
-        for i in range(int(abs(newY-y))-1):
+        for i in range(int(abs(newY-y))):
             mc.setBlock(x, y+1, z, 33, rotation)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x, y+1, z)
-            print(y)
             time.sleep(speed)
     else:
-        for i in range(int(abs(newY-y))+1):
+        for i in range(int(abs(newY-y))):
             mc.setBlock(x, y-1, z, 33, rotation)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x, y-1, z)
@@ -283,14 +282,13 @@ def setz(newZ):
     global z
     global rotation
     if newZ > int(z):
-        for i in range(int(abs(newZ-z))-1):
+        for i in range(int(abs(newZ-z))):
             mc.setBlock(x, y, z+1, 33, rotation)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x, y, z+1)
-            print(z)
             time.sleep(speed)
     else:
-        for i in range(int(abs(newZ-z))+1):
+        for i in range(int(abs(newZ-z))):
             mc.setBlock(x, y, z-1, 33, rotation)
             mc.setBlock(x, y, z, strokeBlock)
             update_pos(x, y, z-1)
@@ -302,12 +300,26 @@ def goto(newX, newY, newZ):
     global y
     global z
     
-    dx = newX - x
-    dy = newY - y
-    dz = newZ - z
+    staticx = x
+    staticy = y
+    staticz = z
     
-    for cx in range(cx, newX):
-        pass
+    deltax = newX - x
+    deltay = newY - y
+    deltaz = newZ - z
+    
+    print(x)
+    
+    for i in range(1,abs(newX - x)+1):
+        if (newX-x) > 0:
+            setx(staticx+i)
+            sety(staticy+floor(i*(deltay/deltax)))
+            setz(staticz+floor(i*(deltaz/deltax)))
+        else:            
+            setx(staticx-i)
+            sety(staticy-floor(i*(deltay/deltax)))
+            setz(staticz-floor(i*(deltaz/deltax)))
+    
     #TODO finish path algorithm
 
 def setSpeed(newSpeed):
@@ -333,6 +345,11 @@ create_pen(px, py, pz)
 update_stroke(35)
 time.sleep(3)
 
-setx(9782)
-sety(67)
-setz(9986)
+goto(9786,60,9988)
+# for i in range(1,abs(9786 - 9779)+1):
+#     setx(9779+i);
+#     print('i', i)
+#     print('newX values: ', 9779+i)
+#     print(9779+i+2)
+#     print('currentPenx: ', x)
+#     print('------')
