@@ -4,6 +4,7 @@ from mcpi.minecraft import Minecraft
 from math import *
 import time
 import enum
+from inspect import getblock
 
 # mc = Minecraft.create("52.8.34.121", 4711)
 mc = Minecraft.create("localhost")
@@ -29,6 +30,20 @@ class direction(enum.Enum):
     UP = 2
     DOWN = 3
     KEEP_SAME = 4
+
+def headingToString(heading):
+    if heading == 0:
+        return "Facing Down"
+    if heading == 1:
+        return "Facing Up"
+    if heading == 2:
+        return "Facing North"
+    if heading == 3:
+        return "Facing South"
+    if heading == 4:
+        return "Facing West"
+    if heading == 5:
+        return "Facing East"
 #----enums----
 
 
@@ -41,6 +56,7 @@ yaw = 0  # current pointer of yaw
 pitch = 1  # 1 = neural; 1/yaw = up; 0 = down
 rotation = yawDirections[yaw] * pitch
 strokeBlock = 0
+isDown = True
 x = 0
 y = 0
 z = 0
@@ -146,6 +162,24 @@ def __update_rotation(yawDirection, pitchDirection):
     #end of rotation update
             
     #---------------PEN CONFIG---------------------
+
+def __get_block_infront():
+    global rotation
+    global x
+    global y
+    global z
+    if rotation == 5:
+        return mc.getBlock(x+1,y,z)
+    if rotation == 4:
+        return mc.getBlock(x-1,y,z)
+    if rotation == 3:
+        return mc.getBlock(x,y,z+1)
+    if rotation == 2:
+        return mc.getBlock(x,y,z+1)
+    if rotation == 1:
+        return mc.getBlock(x,y+1,z)
+    if rotation == 0:
+        return mc.getBlock(x,y-1,z)
 
 def home(offsetX = 0, offsetY = 0, offsetZ = 0):
     global rotation
@@ -313,12 +347,12 @@ def goto(newX, newY, newZ):
     for i in range(1,abs(newX - x)+1):
         if (newX-x) > 0:
             setx(staticx+i)
-            sety(staticy+floor(i*(deltay/deltax)))
-            setz(staticz+floor(i*(deltaz/deltax)))
+            sety(staticy+round(i*(deltay/deltax)))
+            setz(staticz+round(i*(deltaz/deltax)))
         else:            
             setx(staticx-i)
-            sety(staticy-floor(i*(deltay/deltax)))
-            setz(staticz-floor(i*(deltaz/deltax)))
+            sety(staticy-round(i*(deltay/deltax)))
+            setz(staticz-round(i*(deltaz/deltax)))
     
     #TODO finish path algorithm
 
@@ -340,6 +374,33 @@ def turn(direction):  # turn based on a circle of rotation
     else:
         print("illegal turn direction argument. Direction can only be LEFT, RIGHT, UP, or DOWN")
     
+def xcor():
+    global x
+    return x
+def ycor():
+    global y
+    return y
+def zcor():
+    global z
+    return z
+def isDown():
+    global isDown
+    return isDown
+def penUp():
+    global isDown
+    isDown = False
+def penDown():
+    global isDown
+    isDown = True
+def heading():
+    global rotation
+    return headingToString(rotation)
+def position():
+    global x
+    global y
+    global z
+    return (x,y,z)
+
 
 create_pen(px, py, pz)
 update_stroke(35)
