@@ -70,7 +70,7 @@ class MCTurtle:
         self.z = int(cz)
         self.rotation = 5
         self.trailStorage = self.mc.getBlockWithData(cx, cy, cz)
-        self.incomeStorage = __get_block_on_side(rotation)
+        self.incomeStorage = self.__get_block_on_side(rotation)
         self.homeX = self.x
         self.homeY = self.y
         self.homeZ = self.z
@@ -180,3 +180,49 @@ class MCTurtle:
         self.mc.setBlock(self.x, self.y, self.z, self.strokeBlock)
         self.updatePos(self.homeX + offsetX, self.homeY +
                        offsetY, self.homeZ + offsetZ)
+
+    def __setTurtle(self, dx, dy, dz):
+        self.mc.setBlock(self.x + dx, self.y + dy,
+                         self.z + dz, 33, self.rotation)
+        self.updatePos(dx, dy, dz)
+
+    def __setBlock(self, dx, dy, dz, id):
+        self.mc.setBlock(self.x + dx, self.y + dy, self.z + dz, id)
+
+    def forward(self, amount):
+        self.incomeStorage = self.__get_block_on_side(self.rotation)
+        for i in range(0, amount):
+            # move the piston in the specified rotation
+            if not self.isDown:
+                # store the block data infront into "incomeStorage"
+                # move forward and place block in "trailStorage"
+                # transfer the block data in "incomeStorage" into "trailStorage"
+                self.updateStroke(self.trailStorage)
+
+            self.__setBlock(0, 0, 0, self.strokeBlock)
+
+            if self.rotation == 0:
+                # down
+                self.__setTurtle(0, -1, 0)
+            if self.rotation == 1:
+                # up
+                self.__setTurtle(0, 1, 0)
+            if self.rotation == 2:
+                # north
+                self.__setTurtle(0, 0, -1)
+            if self.rotation == 3:
+                # south
+                self.__setTurtle(0, 0, 1)
+            if self.rotation == 4:
+                # west
+                self.__setTurtle(-1, 0, 0)
+            if self.rotation == 5:
+                # east
+                self.__setTurtle(1, 0, 0)
+
+            time.sleep(self.speed)
+            self.trailStorage = self.incomeStorage
+            self.incomeStorage = self.__get_block_on_side(self.rotation)
+
+    def fd(self, amount):
+        self.forward(amount)
