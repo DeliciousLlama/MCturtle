@@ -9,4 +9,4 @@ px = pos.x
 py = pos.y
 pz = pos.z
 
-turtle = MCTurtle(mc, playerId)
+turtle = MCTurtle(mc, pos)

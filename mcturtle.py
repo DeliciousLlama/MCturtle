@@ -25,9 +25,8 @@ class heading(enum.Enum):
 
 class MCTurtle:
 
-    def __init__(self, mc, playerId):
+    def __init__(self, mc, pos):
         self.mc = mc
-        pos = mc.entity.getPos(playerId)
 
         self.lifted = False
         self.yawDirections = [5, 3, 4, 2]  # list of turn faces
@@ -70,7 +69,7 @@ class MCTurtle:
         self.z = int(cz)
         self.rotation = 5
         self.trailStorage = self.mc.getBlockWithData(cx, cy, cz)
-        self.incomeStorage = self.__get_block_on_side(rotation)
+        self.incomeStorage = self.__get_block_on_side(self.rotation)
         self.homeX = self.x
         self.homeY = self.y
         self.homeZ = self.z
@@ -80,6 +79,9 @@ class MCTurtle:
         self.x = ux
         self.y = uy
         self.z = uz
+
+    def updateStroke(self, block):
+        self.strokeBlock = block
 
     def __cycle_yaw(self, direction):
         if direction == direction.RIGHT:
@@ -226,3 +228,182 @@ class MCTurtle:
 
     def fd(self, amount):
         self.forward(amount)
+
+    def backward(self, amount):
+        self.incomeStorage = self.__get_block_on_side(self.rotation, True)
+        for i in range(0, amount):
+            if not self.isDown:
+                # store the block data infront into "incomeStorage"
+                # move forward and place block in "trailStorage"
+                # transfer the block data in "incomeStorage" into "trailStorage"
+                self.updateStroke(self.trailStorage)
+            # move the piston in the specified rotation
+
+            self.__setBlock(0, 0, 0, self.strokeBlock)
+
+            if self.rotation == 0:
+                # down
+                self.__setTurtle(0, 1, 0)
+            if self.rotation == 1:
+                # up
+                self.__setTurtle(0, -1, 0)
+            if self.rotation == 2:
+                # north
+                self.__setTurtle(0, 0, 1)
+            if self.rotation == 3:
+                # south
+                self.__setTurtle(0, 0, -1)
+            if self.rotation == 4:
+                # west
+                self.__setTurtle(1, 0, 0)
+            if self.rotation == 5:
+                # east
+                self.__setTurtle(-1, 0, 0)
+            time.sleep(self.speed)
+            self.trailStorage = self.incomeStorage
+            self.incomeStorage = self.__get_block_on_side(self.rotation, True)
+
+    def bk(self, amount):
+        self.backward(amount)
+
+    def setx(self, newX):
+        if newX > int(self.x):
+            self.incomeStorage = self.__get_block_on_side(heading.EAST)
+            for i in range(int(abs(newX-self.x))):
+                if not self.isDown:
+                    self.updateStroke(self.trailStorage)
+                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setTurtle(1, 0, 0)
+                self.trailStorage = self.incomeStorage
+                self.incomeStorage = self.__get_block_on_side(heading.EAST)
+                time.sleep(self.speed)
+        else:
+            self.incomeStorage = self.__get_block_on_side(heading.EAST, True)
+            for i in range(int(abs(newX-self.x))):
+                if not self.isDown:
+                    self.updateStroke(self.trailStorage)
+                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setTurtle(-1, 0, 0)
+                self.trailStorage = self.incomeStorage
+                self.incomeStorage = self.__get_block_on_side(
+                    heading.EAST, True)
+                time.sleep(self.speed)
+
+    def sety(self, newY):
+        if newY > int(self.y):
+            self.incomeStorage = self.__get_block_on_side(heading.UP)
+            for i in range(int(abs(newY-self.y))):
+                if not self.isDown:
+                    self.updateStroke(self.trailStorage)
+                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setTurtle(0, 1, 0)
+                self.trailStorage = self.incomeStorage
+                self.incomeStorage = self.__get_block_on_side(heading.UP)
+                time.sleep(self.speed)
+        else:
+            self.incomeStorage = self.__get_block_on_side(heading.UP, True)
+            for i in range(int(abs(newY-self.y))):
+                if not self.isDown:
+                    self.updateStroke(self.trailStorage)
+                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setTurtle(0, 1, 0)
+                self.trailStorage = self.incomeStorage
+                self.incomeStorage = self.__get_block_on_side(heading.UP, True)
+                time.sleep(self.speed)
+
+    def setz(self, newZ):
+        if newZ > int(self.z):
+            self.incomeStorage = self.__get_block_on_side(heading.SOUTH)
+            for i in range(int(abs(newZ-self.z))):
+                if not self.isDown:
+                    self.updateStroke(self.trailStorage)
+                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setTurtle(0, 0, 1)
+                self.trailStorage = self.incomeStorage
+                self.incomeStorage = self.__get_block_on_side(heading.SOUTH)
+                time.sleep(self.speed)
+        else:
+            self.incomeStorage = self.__get_block_on_side(heading.SOUTH, True)
+            for i in range(int(abs(newZ-self.z))):
+                if not self.isDown:
+                    self.updateStroke(self.trailStorage)
+                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setTurtle(0, 0, -1)
+                self.trailStorage = self.incomeStorage
+                self.incomeStorage = self.__get_block_on_side(
+                    heading.SOUTH, True)
+                time.sleep(self.speed)
+
+    def goto(self, newX, newY, newZ):
+        # reference: https://en.wikipedia.org/wiki/Line_drawing_algorithm
+        staticx = self.x
+        staticy = self.y
+        staticz = self.z
+
+        deltax = newX - self.x
+        deltay = newY - self.y
+        deltaz = newZ - self.z
+
+        for i in range(1, abs(newX - self.x)+1):
+            if (newX-self.x) > 0:
+                self.setx(staticx+i)
+                self.sety(staticy+round(i*(deltay/deltax)))
+                self.setz(staticz+round(i*(deltaz/deltax)))
+            else:
+                self.setx(staticx-i)
+                self.sety(staticy-round(i*(deltay/deltax)))
+                self.setz(staticz-round(i*(deltaz/deltax)))
+
+    def setSpeed(self, newSpeed):
+        # x blocks per second
+        self.speed = 1/newSpeed
+
+    def __rotate_turtle(self):
+        mc.setBlock(x, y, z, 33, self.rotation)
+
+    def turn(self, direction):  # turn based on a circle of rotation
+        if direction == direction.RIGHT or direction == direction.LEFT:
+            self.__update_rotation(direction, direction.KEEP_SAME)
+            self.__rotate_turtle()
+        elif direction == direction.UP or direction == direction.DOWN:
+            self.__update_rotation(direction.KEEP_SAME, direction)
+            self.__rotate_turtle()
+        elif direction == direction.KEEP_SAME:
+            pass
+        else:
+            print(
+                "illegal turn direction argument. Direction can only be LEFT, RIGHT, UP, or DOWN")
+
+    def xcor(self):
+        return self.x
+
+    def ycor(self):
+        return self.y
+
+    def zcor(self):
+        return self.z
+
+    def isDown(self):
+        return self.isDown
+
+    def penUp(self):
+        self.isDown = False
+
+    def penDown(self):
+        self.isDown = True
+
+    def facing(self):
+        return self.headingToString(self.rotation)
+
+    def position(self):
+        return (self.x, self.y, self.z)
+
+    def setHeading(self, direction):
+        if isinstance(direction, self.heading):
+            self.rotation = direction.value()
+            return
+        if type(direction) != int:
+            print('Error: direcction can only be integer or a heading enum. You passed in a ', type(
+                direction), '. This step will not run due to the error.')
+            return TypeError
+        self.rotation = direction
