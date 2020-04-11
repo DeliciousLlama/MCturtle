@@ -4,6 +4,7 @@ from mcpi.minecraft import Minecraft
 from math import *
 import time
 import enum
+import random
 
 # mc = Minecraft.create("52.8.34.121", 4711)
 mc = Minecraft.create("localhost")
@@ -88,9 +89,9 @@ def createPen(cx, cy, cz):
     global homeZ
     global incomeStorage
     global trailStorage
-    x = int(cx)
-    y = int(cy)
-    z = int(cz)
+    x = floor(cx)
+    y = floor(cy)
+    z = floor(cz)
     rotation = 5
     trailStorage = mc.getBlockWithData(cx, cy, cz)
     incomeStorage = __get_block_on_side(rotation)
@@ -99,6 +100,7 @@ def createPen(cx, cy, cz):
     homeZ = z
     mc.setBlock(cx, cy, cz, 33, 5)
     
+    print(cx, cz)
 
 
 def updatePos(ux, uy, uz):
@@ -264,19 +266,20 @@ def forward(amount):
     
         if rotation == 0:
             # down
-            mc.setBlock(x, y - 1, z, 33, 0)
+            mc.setBlock(x, y - 1, z, 33, 0)                
             mc.setBlock(x, y, z, strokeBlock)
             updatePos(x, y - 1, z)
             time.sleep(speed)
         if rotation == 1:
             # up
             mc.setBlock(x, y + 1, z, 33, 1)
+            mc.setBlock(x, y + 1, z, strokeBlock, 1)
             mc.setBlock(x, y, z, strokeBlock)
             updatePos(x, y + 1, z)
             time.sleep(speed)
         if rotation == 2:
             # north
-            mc.setBlock(x, y, z - 1, 33, 2)
+            mc.setBlock(x, y, z - 1, 33, 2)               
             mc.setBlock(x, y, z, strokeBlock)
             updatePos(x, y, z - 1)
             time.sleep(speed)
@@ -478,9 +481,11 @@ def setSpeed(newSpeed):
 
 def turn(direction):  # turn based on a circle of rotation
     global rotation
+    global speed
     if direction == direction.RIGHT or direction == direction.LEFT:
         __update_rotation(direction, direction.KEEP_SAME)
         mc.setBlock(x, y, z, 33, rotation)
+        time.sleep(speed)
     elif direction == direction.UP or direction == direction.DOWN:
         __update_rotation(direction.KEEP_SAME, direction)
         mc.setBlock(x, y, z, 33, rotation)
@@ -517,29 +522,37 @@ def position():
     return (x,y,z)
 def setHeading(direction):
     global rotation
+    global speed
     if isinstance(direction, heading):
         rotation = direction.value()
-        return
-    if type(direction) != int:
-        print('Error: direcction can only be integer or a heading enum. You passed in a ', type(direction),'. This step will not run due to the error.')
+        mc.setBlock(x, y, z, 33, rotation)
+        time.sleep(speed)
+    if type(direction) != int and direction <= 5 and direction >=0:
+        print('Error: direction can only be integer or a heading enum. You passed in a ', type(direction),'. This step will not run due to the error.')
         return TypeError
     rotation = direction
+    mc.setBlock(x, y, z, 33, rotation)
+    time.sleep(speed)
+    
+def seth(direction):
+    setHeading(direction)
 
+def distance(nx, ny, nz):
+    global x
+    global y
+    global z
+    xz = sqrt((nx-x)**2 + (nz-z)**2)
+    print(x, z)
+    return sqrt(xz**2 + (ny-y)**2)
+
+def stamp():
+    pass
 
 createPen(px, py-1, pz)
 time.sleep(3)
-updateStroke(1)
+updateStroke(0)
 
-penUp()
-for i in range(4):
-    forward(14-i*2)
-    sety(61-i)
-    backward(13-i*2)
-    sety(55+i)
-backward(3)
-forward(3)
-penUp()
-goto(int(px), int(py-1), int(pz))
+print(distance(0,54,0))
 # 9786 54 9991
 # for i in range(1,abs(9786 - 9779)+1):
 #     setx(9779+i);

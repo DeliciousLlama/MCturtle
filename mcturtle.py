@@ -45,8 +45,8 @@ class MCTurtle:
         self.speed = 0.25
         self.incomeStorage = None
         self.trailStorage = None
-
-        self.createPen(pos.x, pos.y, pos.z)
+        
+        self.createPen(pos.x, pos.y-1, pos.z)
 
     def headingToString(self, heading):
         if heading == 0 or heading == heading.UP:
@@ -64,9 +64,9 @@ class MCTurtle:
 
     def createPen(self, cx, cy, cz):
         # make a pen facing east
-        self.x = int(cx)
-        self.y = int(cy)
-        self.z = int(cz)
+        self.x = floor(cx)
+        self.y = floor(cy)
+        self.z = floor(cz)
         self.rotation = 5
         self.trailStorage = self.mc.getBlockWithData(cx, cy, cz)
         self.incomeStorage = self.__get_block_on_side(self.rotation)
@@ -177,16 +177,17 @@ class MCTurtle:
                 return self.__getBlockWithData(0, 1, 0)
 
     def home(self, offsetX=0, offsetY=0, offsetZ=0):
-        self.mc.setBlock(self.homeX + offsetX, self.homeY +
-                         offsetY, self.homeZ + offsetZ, 33, self.rotation)
-        self.mc.setBlock(self.x, self.y, self.z, self.strokeBlock)
-        self.updatePos(self.homeX + offsetX, self.homeY +
-                       offsetY, self.homeZ + offsetZ)
+#         self.mc.setBlock(self.homeX + offsetX, self.homeY +
+#                          offsetY, self.homeZ + offsetZ, 33, self.rotation)
+#         self.mc.setBlock(self.x, self.y, self.z, self.strokeBlock)
+#         self.updatePos(self.homeX + offsetX, self.homeY +
+#                        offsetY, self.homeZ + offsetZ)
+        self.goto(self.homeX, self.homeY, self.homeZ)
 
     def __setTurtle(self, dx, dy, dz):
         self.mc.setBlock(self.x + dx, self.y + dy,
                          self.z + dz, 33, self.rotation)
-        self.updatePos(dx, dy, dz)
+        self.updatePos(self.x + dx, self.y + dy, self.z + dz)
 
     def __setBlock(self, dx, dy, dz, id):
         self.mc.setBlock(self.x + dx, self.y + dy, self.z + dz, id)
@@ -272,7 +273,7 @@ class MCTurtle:
             for i in range(int(abs(newX-self.x))):
                 if not self.isDown:
                     self.updateStroke(self.trailStorage)
-                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setBlock(0, 0, 0, self.strokeBlock)
                 self.__setTurtle(1, 0, 0)
                 self.trailStorage = self.incomeStorage
                 self.incomeStorage = self.__get_block_on_side(heading.EAST)
@@ -282,7 +283,7 @@ class MCTurtle:
             for i in range(int(abs(newX-self.x))):
                 if not self.isDown:
                     self.updateStroke(self.trailStorage)
-                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setBlock(0, 0, 0, self.strokeBlock)
                 self.__setTurtle(-1, 0, 0)
                 self.trailStorage = self.incomeStorage
                 self.incomeStorage = self.__get_block_on_side(
@@ -295,7 +296,7 @@ class MCTurtle:
             for i in range(int(abs(newY-self.y))):
                 if not self.isDown:
                     self.updateStroke(self.trailStorage)
-                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setBlock(0, 0, 0, self.strokeBlock)
                 self.__setTurtle(0, 1, 0)
                 self.trailStorage = self.incomeStorage
                 self.incomeStorage = self.__get_block_on_side(heading.UP)
@@ -305,8 +306,8 @@ class MCTurtle:
             for i in range(int(abs(newY-self.y))):
                 if not self.isDown:
                     self.updateStroke(self.trailStorage)
-                self.mc.setBlock(0, 0, 0, self.strokeBlock)
-                self.__setTurtle(0, 1, 0)
+                self.__setBlock(0, 0, 0, self.strokeBlock)
+                self.__setTurtle(0, -1, 0)
                 self.trailStorage = self.incomeStorage
                 self.incomeStorage = self.__get_block_on_side(heading.UP, True)
                 time.sleep(self.speed)
@@ -317,7 +318,7 @@ class MCTurtle:
             for i in range(int(abs(newZ-self.z))):
                 if not self.isDown:
                     self.updateStroke(self.trailStorage)
-                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setBlock(0, 0, 0, self.strokeBlock)
                 self.__setTurtle(0, 0, 1)
                 self.trailStorage = self.incomeStorage
                 self.incomeStorage = self.__get_block_on_side(heading.SOUTH)
@@ -327,7 +328,7 @@ class MCTurtle:
             for i in range(int(abs(newZ-self.z))):
                 if not self.isDown:
                     self.updateStroke(self.trailStorage)
-                self.mc.setBlock(0, 0, 0, self.strokeBlock)
+                self.__setBlock(0, 0, 0, self.strokeBlock)
                 self.__setTurtle(0, 0, -1)
                 self.trailStorage = self.incomeStorage
                 self.incomeStorage = self.__get_block_on_side(
@@ -359,7 +360,7 @@ class MCTurtle:
         self.speed = 1/newSpeed
 
     def __rotate_turtle(self):
-        mc.setBlock(x, y, z, 33, self.rotation)
+        self.mc.setBlock(self.x, self.y, self.z, 33, self.rotation)
 
     def turn(self, direction):  # turn based on a circle of rotation
         if direction == direction.RIGHT or direction == direction.LEFT:
@@ -399,11 +400,11 @@ class MCTurtle:
         return (self.x, self.y, self.z)
 
     def setHeading(self, direction):
-        if isinstance(direction, self.heading):
+        if isinstance(direction, heading):
             self.rotation = direction.value()
             return
         if type(direction) != int:
-            print('Error: direcction can only be integer or a heading enum. You passed in a ', type(
+            print('Error: direction can only be integer or a heading enum. You passed in a ', type(
                 direction), '. This step will not run due to the error.')
             return TypeError
         self.rotation = direction
