@@ -13,7 +13,6 @@ class direction(enum.Enum):
     DOWN = 3
     KEEP_SAME = 4
 
-
 class heading(enum.Enum):
     DOWN = 0
     UP = 1
@@ -21,7 +20,6 @@ class heading(enum.Enum):
     SOUTH = 3
     WEST = 4
     EAST = 5
-
 
 class MCTurtle:
 
@@ -84,6 +82,7 @@ class MCTurtle:
         self.strokeBlock = block
 
     def __cycle_yaw(self, direction):
+        assert direction in [direction.RIGHT, direction.LEFT, direction.KEEP_SAME], 'direction can only be LEFT, RIGHT, or KEEP_SAME.'
         if direction == direction.RIGHT:
             # cycle it to the RIGHT
             if self.yaw == 3:  # reached end, reset
@@ -98,9 +97,6 @@ class MCTurtle:
                 self.yaw -= 1
         elif direction == direction.KEEP_SAME:
             pass
-        else:
-            print("error: illegal direction argument " +
-                  direction + ". Direction can only be left/right")
 
     def __update_rotation(self, yawDirection, pitchDirection):
         # based on the yaw*pitch formula, update the master rotation value
@@ -116,23 +112,17 @@ class MCTurtle:
                 self.pitch = 1/self.yawDirections[self.yaw]
             elif pitchDirection == direction.KEEP_SAME:
                 pass
-            else:
-                print("illegal pitch direction statement. Pitch can only be UP or DOWN")
         elif self.pitch == 0:  # if it is currently facing down
             if pitchDirection == direction.UP:  # then make it face up
                 self.pitch = 1
             # these won't be able to do anything
             elif pitchDirection == direction.DOWN or pitchDirection == direction.KEEP_SAME:
                 pass
-            else:
-                print("illegal pitch direction statement. Pitch can only be UP or DOWN")
         else:  # then it must be facing up, as it its not down or neutral
             if pitchDirection == direction.DOWN:
                 self.pitch = 1
             elif pitchDirection == direction.UP or pitchDirection == direction.KEEP_SAME:  # these won't do anything either
                 pass
-            else:
-                print("illegal pitch direction statement. Pitch can only be UP or DOWN")
 
         # third, we update the master rotational value
         self.rotation = self.yawDirections[self.yaw] * self.pitch
@@ -363,17 +353,13 @@ class MCTurtle:
         self.mc.setBlock(self.x, self.y, self.z, 33, self.rotation)
 
     def turn(self, direction):  # turn based on a circle of rotation
+        assert direction in [direction.RIGHT, direction.LEFT, direction.UP, direction.DOWN, direction.KEEP_SAME], 'turn direction can only be RIGHT, LEFT, UP, DOWN, or KEEP_SAME.'
         if direction == direction.RIGHT or direction == direction.LEFT:
             self.__update_rotation(direction, direction.KEEP_SAME)
             self.__rotate_turtle()
         elif direction == direction.UP or direction == direction.DOWN:
             self.__update_rotation(direction.KEEP_SAME, direction)
             self.__rotate_turtle()
-        elif direction == direction.KEEP_SAME:
-            pass
-        else:
-            print(
-                "illegal turn direction argument. Direction can only be LEFT, RIGHT, UP, or DOWN")
 
     def xcor(self):
         return self.x
@@ -403,8 +389,7 @@ class MCTurtle:
         if isinstance(direction, heading):
             self.rotation = direction.value()
             return
-        if type(direction) != int:
-            print('Error: direction can only be integer or a heading enum. You passed in a ', type(
-                direction), '. This step will not run due to the error.')
-            return TypeError
+        assert type(direction) == int, 'direction can only be integer or a heading enum. You passed in a ' + type(direction)
         self.rotation = direction
+        self.mc.setBlock(self.x, self.y, self.z, 33, direction)
+        
