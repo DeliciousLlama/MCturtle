@@ -40,6 +40,7 @@ Stuff to look out for:
   - Try not to over speed the pen, as you won't see it go anywhere and possibly destroy some of your builds if you are not careful.
   - If there is something wrong immediatly pause or kill the program in your IDE or your TERMINAL, not minecraft chat
   - In order to set it up, you will need to connect to a minecraft server, either local with the correct plugins or distant with the corrent plugins. Please check the demos to see how to set up your code.
+  - Any bugs or errors that is unintended please email me at: [reallemonorange@gmail.com](reallemonorange@gmail.com)
 
 Installation:
 ---
