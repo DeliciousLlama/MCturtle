@@ -1,6 +1,7 @@
+# NOTE: Please check [demo1.py] for all explanation on how the set up works!
 from mcpi.minecraft import Minecraft
 import time
-from mcturtle import MCTurtle, direction
+from MCpen.mcturtle import MCTurtle, direction
 import random
 
 mc = Minecraft.create("localhost")
@@ -10,8 +11,13 @@ px = pos.x
 py = pos.y
 pz = pos.z
 
-turtle = MCTurtle(mc, pos)
+turtle = MCTurtle(mc, px, py-1, pz)
 time.sleep(3)
+
+#------------------------------------------
+# Don't get scared... This basically demonstrates all functions that there are in MCpen as of Arl 26, 2020.
+# For updates, please check the documentation that is included in the README.md file.
+
 turtle.penUp()
 turtle.fd(15)
 turtle.penDown()
